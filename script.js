@@ -1,4 +1,4 @@
-const API_KEY = 'YOUR_API_KEY';
+const url = `https://corsproxy.io/?http://api.aviationstack.com/v1/flights?access_key=${83d8ca161a2ddda48f3028d1656dec47}`;
 const BCD_COORDS = [10.7762, 123.0189];
 
 const MOCK_DATA = {
