@@ -3,34 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCD Live Flight Tracker</title>
+    <title>BCD Flight Radar</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-    <h1>Bacolod-Silay (BCD) Radar</h1>
-    <div class="controls">
-        <label class="switch">
-            <input type="checkbox" id="test-mode-toggle">
-            <span class="slider"></span>
-            <span class="label-text">Test Mode</span>
-        </label>
-        <button onclick="location.reload()" class="refresh-btn">🔄 Refresh</button>
-    </div>
+        <h1>Bacolod-Silay Radar</h1>
+        <div class="controls">
+            <label class="switch">
+                <input type="checkbox" id="test-mode-toggle">
+                <span class="slider"></span>
+                <span class="label-text">Test Mode</span>
+            </label>
+            <button onclick="location.reload()" class="refresh-btn">🔄 Refresh</button>
+        </div>
     </header>
 
     <div class="main-layout">
-        <div id="map" class="map-container"></div>
-
+        <div id="map"></div>
         <aside class="sidebar">
             <div class="column">
-                <h2>🛬 Approach</h2>
-                <div id="arrivals-list" class="list">Loading...</div>
+                <h2>🛬 Approaches</h2>
+                <div id="arrivals-list"></div>
             </div>
             <div class="column">
                 <h2>🛫 Departures</h2>
-                <div id="departures-list" class="list">Loading...</div>
+                <div id="departures-list"></div>
             </div>
         </aside>
     </div>
