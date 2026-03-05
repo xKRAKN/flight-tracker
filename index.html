@@ -9,8 +9,15 @@
 </head>
 <body>
     <header>
-        <h1>Bacolod-Silay (BCD) Radar</h1>
-        <button onclick="location.reload()" class="refresh-btn">🔄 Refresh Data</button>
+    <h1>Bacolod-Silay (BCD) Radar</h1>
+    <div class="controls">
+        <label class="switch">
+            <input type="checkbox" id="test-mode-toggle">
+            <span class="slider"></span>
+            <span class="label-text">Test Mode</span>
+        </label>
+        <button onclick="location.reload()" class="refresh-btn">🔄 Refresh</button>
+    </div>
     </header>
 
     <div class="main-layout">
