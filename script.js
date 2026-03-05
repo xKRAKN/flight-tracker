@@ -22,65 +22,69 @@ L.marker(BCD_COORDS).addTo(map)
     .bindPopup('<b>Bacolod-Silay International Airport (BCD)</b>')
     .openPopup();
 
-// 3. Fetch Data Logic (Live vs Test)
-async function fetchFlights() {
-    const isTestMode = document.getElementById('test-mode-toggle').checked;
+// 3. The logic to decide between Mock and Real data
+async function updateDashboard() {
+    const toggle = document.getElementById('test-mode-toggle');
+    const isTestMode = toggle ? toggle.checked : false; // Safe check
     
     if (isTestMode) {
-        console.log("Test Mode Active: Displaying Mock Data");
+        console.log("TEST MODE: ON");
         processAndRender(MOCK_DATA);
     } else {
-        console.log("Live Mode Active: Calling Aviationstack API");
+        console.log("LIVE MODE: ON");
         try {
-            // Note: Use http if on free tier as https is often restricted
             const response = await fetch(`http://api.aviationstack.com/v1/flights?access_key=${API_KEY}`);
             const result = await response.json();
             processAndRender(result);
-        } catch (e) { 
-            console.error("Data fetch failed", e); 
-            // Fallback message if API fails
-            document.getElementById('arrivals-list').innerHTML = '<p style="color:red">API Error. Try Test Mode?</p>';
+        } catch (e) {
+            console.error("API Error:", e);
+            document.getElementById('arrivals-list').innerHTML = '<p style="color:#e74c3c">API Limit reached or Offline. Switch to Test Mode!</p>';
         }
     }
 }
 
-// 4. Filter and Send to Lists
+// 4. Send the filtered data to the lists
 function processAndRender(result) {
-    if (result.data) {
-        const arrivals = result.data.filter(f => f.arrival?.iata === 'BCD');
-        const departures = result.data.filter(f => f.departure?.iata === 'BCD');
+    if (!result || !result.data) return;
+    
+    const arrivals = result.data.filter(f => f.arrival?.iata === 'BCD');
+    const departures = result.data.filter(f => f.departure?.iata === 'BCD');
 
-        renderList(arrivals, 'arrivals-list', 'from');
-        renderList(departures, 'departures-list', 'to');
-    }
+    renderList(arrivals, 'arrivals-list', 'from');
+    renderList(departures, 'departures-list', 'to');
 }
 
-// 5. Update UI
+// 5. Build the HTML cards
 function renderList(flights, elementId, dir) {
     const el = document.getElementById(elementId);
-    el.innerHTML = flights.length ? '' : '<p>No live flights found.</p>';
+    if (!el) return;
+
+    el.innerHTML = flights.length ? '' : `<p>No ${dir === 'from' ? 'arrivals' : 'departures'} found.</p>`;
     
     flights.forEach(f => {
         const div = document.createElement('div');
         div.className = 'flight-card';
+        const location = dir === 'from' ? (f.departure?.iata || "???") : (f.arrival?.iata || "???");
         
-        // Logical check for departure vs arrival IATA display
-        const locationIata = dir === 'from' ? f.departure.iata : f.arrival.iata;
-        const status = f.flight_status || 'unknown';
-
         div.innerHTML = `
             <div class="flight-info">
                 <strong>${f.flight.iata}</strong><br>
-                <small>${dir.toUpperCase()}: ${locationIata}</small>
+                <small>${dir.toUpperCase()}: ${location}</small>
             </div>
-            <div class="status-${status}">${status.toUpperCase()}</div>
+            <div class="status-${f.flight_status || 'scheduled'}">${(f.flight_status || 'SCHED').toUpperCase()}</div>
         `;
         el.appendChild(div);
     });
 }
 
-// 6. Event Listeners
-window.onload = fetchFlights;
+// 6. Initialization & Event Listeners
+window.addEventListener('DOMContentLoaded', () => {
+    // Initial load
+    updateDashboard();
 
-// Trigger refresh whenever toggle is flipped
-document.getElementById('test-mode-toggle').addEventListener('change', fetchFlights);
+    // Listen for the toggle flip
+    const toggle = document.getElementById('test-mode-toggle');
+    if (toggle) {
+        toggle.addEventListener('change', updateDashboard);
+    }
+});
