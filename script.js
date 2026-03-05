@@ -1,35 +1,41 @@
-const API_KEY = 'YOUR_API_KEY'; // Replace with your real key
+const API_KEY = 'YOUR_API_KEY'; // Replace with your real Aviationstack key
 const BCD_COORDS = [10.7762, 123.0189];
 
-// 1. Mock Data for Testing
+// 1. Mock Data
 const MOCK_DATA = {
     data: [
         { flight: { iata: "5J483" }, departure: { iata: "MNL", scheduled: "2026-03-05T08:30:00" }, arrival: { iata: "BCD", estimated: "2026-03-05T09:45:00" }, flight_status: "active" },
-        { flight: { iata: "PR2132" }, departure: { iata: "BCD", scheduled: "2026-03-05T10:15:00" }, arrival: { iata: "MNL", estimated: "2026-03-05T11:30:00" }, flight_status: "scheduled" },
-        { flight: { iata: "Z2605" }, departure: { iata: "MNL", scheduled: "2026-03-05T14:20:00" }, arrival: { iata: "BCD", estimated: "2026-03-05T15:35:00" }, flight_status: "scheduled" }
+        { flight: { iata: "PR2132" }, departure: { iata: "BCD", scheduled: "2026-03-05T10:15:00" }, arrival: { iata: "MNL", estimated: "2026-03-05T11:30:00" }, flight_status: "scheduled" }
     ]
 };
 
-// 2. Initialize the Map
-const map = L.map('map').setView(BCD_COORDS, 11);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap'
-}).addTo(map);
+let map;
 
-L.marker(BCD_COORDS).addTo(map).bindPopup('Bacolod-Silay Airport (BCD)');
+// 2. Initialize App
+window.addEventListener('DOMContentLoaded', () => {
+    // FIX: Initialize map only after DOM is loaded
+    map = L.map('map').setView(BCD_COORDS, 11);
 
-// 3. Main Logic
+    // FIX: Use HTTPS for tiles to avoid grey box on GitHub
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO'
+    }).addTo(map);
+
+    L.marker(BCD_COORDS).addTo(map).bindPopup('Bacolod-Silay Airport');
+
+    updateDashboard();
+
+    document.getElementById('test-mode-toggle').addEventListener('change', updateDashboard);
+});
+
 async function updateDashboard() {
     const isTestMode = document.getElementById('test-mode-toggle').checked;
-    const arrivalsEl = document.getElementById('arrivals-list');
-    const departuresEl = document.getElementById('departures-list');
-
+    
     if (isTestMode) {
-        console.log("Using Mock Data");
         renderData(MOCK_DATA);
     } else {
-        console.log("Fetching Live API via Proxy");
         try {
+            // FIX: Using CORS Proxy to allow HTTP API on HTTPS GitHub Pages
             const apiTarget = `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}`;
             const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiTarget)}`;
             
@@ -39,9 +45,8 @@ async function updateDashboard() {
             if (data.error) throw new Error(data.error.code);
             renderData(data);
         } catch (e) {
-            console.error("API Error:", e);
-            arrivalsEl.innerHTML = `<p style="color:#e74c3c; font-size:0.8rem;">Live API Blocked or Limit Reached. Use Test Mode!</p>`;
-            departuresEl.innerHTML = "";
+            console.error("API Fetch Error:", e);
+            document.getElementById('arrivals-list').innerHTML = "<p style='color:red; font-size:0.8rem;'>API Blocked/Limit Reached. Switch to Test Mode!</p>";
         }
     }
 }
@@ -57,10 +62,9 @@ function renderData(result) {
 
 function displayList(flights, elementId, dir) {
     const el = document.getElementById(elementId);
-    el.innerHTML = flights.length ? '' : '<p style="font-size:0.8rem; color:#555;">No flights found.</p>';
+    el.innerHTML = flights.length ? '' : '<p style="color:#555; font-size:0.8rem;">No flights found.</p>';
     
     flights.forEach(f => {
-        // Extract Time
         const timeValue = dir === 'from' ? (f.arrival.estimated || f.arrival.scheduled) : f.departure.scheduled;
         const timeDisplay = timeValue ? new Date(timeValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--:--";
         const location = dir === 'from' ? (f.departure?.iata || "???") : (f.arrival?.iata || "???");
@@ -78,9 +82,3 @@ function displayList(flights, elementId, dir) {
         el.appendChild(div);
     });
 }
-
-// 4. Set Up Listeners
-window.addEventListener('DOMContentLoaded', () => {
-    updateDashboard();
-    document.getElementById('test-mode-toggle').addEventListener('change', updateDashboard);
-});
