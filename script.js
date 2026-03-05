@@ -4,12 +4,21 @@ const BCD_COORDS = [10.7762, 123.0189];
 // 1. Mock Data
 const MOCK_DATA = {
     data: [
+        // --- DEPARTURES (from your first image) ---
         { flight: { iata: "5J478" }, airline: { name: "Cebu Pacific" }, departure: { iata: "BCD", scheduled: "2026-03-05T17:50:00" }, arrival: { iata: "MNL", airport: "Manila" }, flight_status: "active" },
         { flight: { iata: "PR2288" }, airline: { name: "Philippine Airlines" }, departure: { iata: "BCD", scheduled: "2026-03-05T18:40:00" }, arrival: { iata: "CEB", airport: "Cebu" }, flight_status: "active" },
         { flight: { iata: "5J2591" }, airline: { name: "Cebu Pacific" }, departure: { iata: "BCD", scheduled: "2026-03-05T18:55:00" }, arrival: { iata: "DVO", airport: "Davao City" }, flight_status: "scheduled" },
         { flight: { iata: "PR2136" }, airline: { name: "Philippine Airlines" }, departure: { iata: "BCD", scheduled: "2026-03-05T19:25:00" }, arrival: { iata: "MNL", airport: "Manila" }, flight_status: "active" },
         { flight: { iata: "Z2606" }, airline: { name: "AirAsia" }, departure: { iata: "BCD", scheduled: "2026-03-05T19:30:00" }, arrival: { iata: "MNL", airport: "Manila" }, flight_status: "active" },
-        { flight: { iata: "DG6455" }, airline: { name: "Cebgo" }, departure: { iata: "BCD", scheduled: "2026-03-05T21:25:00" }, arrival: { iata: "CEB", airport: "Cebu" }, flight_status: "scheduled" }
+        { flight: { iata: "DG6455" }, airline: { name: "Cebgo" }, departure: { iata: "BCD", scheduled: "2026-03-05T21:25:00" }, arrival: { iata: "CEB", airport: "Cebu" }, flight_status: "scheduled" },
+
+        // --- ARRIVALS / APPROACHES (from your second image) ---
+        { flight: { iata: "PR2287" }, airline: { name: "Philippine Airlines" }, departure: { iata: "CEB", airport: "Cebu" }, arrival: { iata: "BCD", scheduled: "2026-03-05T18:15:00" }, flight_status: "scheduled" },
+        { flight: { iata: "5J2590" }, airline: { name: "Cebu Pacific" }, departure: { iata: "DVO", airport: "Davao City" }, arrival: { iata: "BCD", scheduled: "2026-03-05T18:20:00" }, flight_status: "scheduled" },
+        { flight: { iata: "PR2135" }, airline: { name: "Philippine Airlines" }, departure: { iata: "MNL", airport: "Manila" }, arrival: { iata: "BCD", scheduled: "2026-03-05T18:40:00" }, flight_status: "scheduled" },
+        { flight: { iata: "Z2605" }, airline: { name: "AirAsia" }, departure: { iata: "MNL", airport: "Manila" }, arrival: { iata: "BCD", scheduled: "2026-03-05T18:45:00" }, flight_status: "scheduled" },
+        { flight: { iata: "5J479" }, airline: { name: "Cebu Pacific" }, departure: { iata: "MNL", airport: "Manila" }, arrival: { iata: "BCD", scheduled: "2026-03-05T20:30:00" }, flight_status: "scheduled" },
+        { flight: { iata: "DG6454" }, airline: { name: "Cebgo" }, departure: { iata: "CEB", airport: "Cebu" }, arrival: { iata: "BCD", scheduled: "2026-03-05T21:05:00" }, flight_status: "scheduled" }
     ]
 };
 
