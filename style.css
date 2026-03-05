@@ -1,48 +1,169 @@
-body {
-    background-color: #0b0e14;
-    color: #e0e0e0;
-    font-family: 'Segoe UI', sans-serif;
+/* 1. Global Reset & Base Styles */
+* {
+    box-sizing: border-box;
     margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #0b0e14; /* Deep dark background */
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* Prevents double scrollbars */
 }
 
-header { padding: 10px 20px; background: #1a1f26; border-bottom: 1px solid #333; }
-h1 { margin: 0; font-size: 1.5rem; color: #3498db; }
+/* 2. Header Section */
+header {
+    background: #1a1f26;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #3498db;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000; /* Stays above the map */
+}
 
+header h1 {
+    font-size: 1.4rem;
+    color: #3498db;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* 3. Refresh Button */
+.refresh-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.refresh-btn:hover {
+    background: #2980b9;
+}
+
+.refresh-btn:active {
+    transform: scale(0.95);
+}
+
+/* 4. Main Layout (Map + Sidebar) */
 .main-layout {
     display: flex;
-    flex: 1;
-    overflow: hidden;
+    flex: 1; /* Takes up remaining height */
+    width: 100%;
 }
 
-.map-container {
-    flex: 2; /* Map takes up more space */
-    background: #000;
+/* 5. Map Styling */
+#map {
+    flex: 2; /* Map is twice as wide as the sidebar */
+    height: 100%;
+    background: #111; /* Fallback before tiles load */
 }
 
+/* 6. Sidebar Styling */
 .sidebar {
     flex: 1;
+    max-width: 400px;
+    background: #11151c;
+    border-left: 1px solid #2c3e50;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 15px;
-    background: #11151c;
-    overflow-y: auto; /* Scrollable lists */
-    border-left: 1px solid #333;
+    overflow-y: auto; /* Allows scrolling through flights */
+    padding: 20px;
 }
 
-.column h2 { font-size: 1.1rem; border-bottom: 1px solid #444; padding-bottom: 5px; }
+.column {
+    margin-bottom: 30px;
+}
 
+.column h2 {
+    font-size: 1.1rem;
+    color: #95a5a6;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #2c3e50;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 7. Flight Cards */
 .flight-card {
     background: #1d232c;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    font-size: 0.9rem;
     border-left: 4px solid #3498db;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s ease-in;
 }
 
-.status-active { color: #2ecc71; }
-.status-scheduled { color: #f1c40f; }
+.flight-info strong {
+    font-size: 1rem;
+    color: #fff;
+}
+
+.flight-info small {
+    display: block;
+    color: #bdc3c7;
+    margin-top: 4px;
+}
+
+/* Status Colors */
+.status-active, .status-landed {
+    color: #2ecc71;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-scheduled {
+    color: #f1c40f;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-cancelled {
+    color: #e74c3c;
+}
+
+/* 8. Animations & Responsiveness */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tablet/Mobile Adjustments */
+@media (max-width: 768px) {
+    .main-layout {
+        flex-direction: column; /* Stack map on top of sidebar */
+    }
+    
+    #map {
+        flex: none;
+        height: 40%; /* Smaller map on mobile */
+    }
+    
+    .sidebar {
+        flex: 1;
+        max-width: 100%;
+        border-left: none;
+        border-top: 2px solid #3498db;
+    }
+}
