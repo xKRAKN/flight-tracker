@@ -4,8 +4,12 @@ const BCD_COORDS = [10.7762, 123.0189];
 // 1. Mock Data
 const MOCK_DATA = {
     data: [
-        { flight: { iata: "5J483" }, departure: { iata: "MNL", scheduled: "2026-03-05T08:30:00" }, arrival: { iata: "BCD", estimated: "2026-03-05T09:45:00" }, flight_status: "active" },
-        { flight: { iata: "PR2132" }, departure: { iata: "BCD", scheduled: "2026-03-05T10:15:00" }, arrival: { iata: "MNL", estimated: "2026-03-05T11:30:00" }, flight_status: "scheduled" }
+        { flight: { iata: "5J478" }, airline: { name: "Cebu Pacific" }, departure: { iata: "BCD", scheduled: "2026-03-05T17:50:00" }, arrival: { iata: "MNL", airport: "Manila" }, flight_status: "active" },
+        { flight: { iata: "PR2288" }, airline: { name: "Philippine Airlines" }, departure: { iata: "BCD", scheduled: "2026-03-05T18:40:00" }, arrival: { iata: "CEB", airport: "Cebu" }, flight_status: "active" },
+        { flight: { iata: "5J2591" }, airline: { name: "Cebu Pacific" }, departure: { iata: "BCD", scheduled: "2026-03-05T18:55:00" }, arrival: { iata: "DVO", airport: "Davao City" }, flight_status: "scheduled" },
+        { flight: { iata: "PR2136" }, airline: { name: "Philippine Airlines" }, departure: { iata: "BCD", scheduled: "2026-03-05T19:25:00" }, arrival: { iata: "MNL", airport: "Manila" }, flight_status: "active" },
+        { flight: { iata: "Z2606" }, airline: { name: "AirAsia" }, departure: { iata: "BCD", scheduled: "2026-03-05T19:30:00" }, arrival: { iata: "MNL", airport: "Manila" }, flight_status: "active" },
+        { flight: { iata: "DG6455" }, airline: { name: "Cebgo" }, departure: { iata: "BCD", scheduled: "2026-03-05T21:25:00" }, arrival: { iata: "CEB", airport: "Cebu" }, flight_status: "scheduled" }
     ]
 };
 
@@ -67,17 +71,28 @@ function displayList(flights, elementId, dir) {
     flights.forEach(f => {
         const timeValue = dir === 'from' ? (f.arrival.estimated || f.arrival.scheduled) : f.departure.scheduled;
         const timeDisplay = timeValue ? new Date(timeValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--:--";
-        const location = dir === 'from' ? (f.departure?.iata || "???") : (f.arrival?.iata || "???");
-        const status = f.flight_status || 'scheduled';
+        
+        // Show City Name + IATA Code (e.g., Manila MNL)
+        const city = dir === 'from' ? (f.departure?.airport || "Unknown") : (f.arrival?.airport || "Unknown");
+        const iata = dir === 'from' ? (f.departure?.iata || "???") : (f.arrival?.iata || "???");
+        
+        const statusText = f.flight_status === 'scheduled' ? 'Scheduled' : timeDisplay;
+        const statusClass = `status-${f.flight_status}`;
 
         const div = document.createElement('div');
         div.className = 'flight-card';
         div.innerHTML = `
             <div class="flight-info">
-                <strong>${f.flight.iata}</strong> • <span class="flight-time">${timeDisplay}</span><br>
-                <small>${dir.toUpperCase()}: ${location}</small>
+                <div style="display: flex; flex-direction: column;">
+                    <span class="flight-time">${timeDisplay}</span>
+                    <small style="color: #95a5a6;">${statusText}</small>
+                </div>
+                <div style="margin-left: 15px;">
+                    <strong>${city} <span style="background: #333; padding: 1px 4px; border-radius: 3px; font-size: 0.7rem;">${iata}</span></strong><br>
+                    <small>${f.flight.iata} • ${f.airline.name}</small>
+                </div>
             </div>
-            <div class="status-${status}">${status.toUpperCase()}</div>
+            <div class="${statusClass}">●</div>
         `;
         el.appendChild(div);
     });
