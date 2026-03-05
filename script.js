@@ -4,7 +4,7 @@ const BCD_COORDS = [10.7762, 123.0189];
 // 1. Mock Data
 const MOCK_DATA = {
     data: [
-        // --- DEPARTURES (from your first image) ---
+        // DEPARTURES: departure.iata is "BCD"
         { flight: { iata: "5J478" }, airline: { name: "Cebu Pacific" }, departure: { iata: "BCD", scheduled: "2026-03-05T17:50:00" }, arrival: { iata: "MNL", airport: "Manila" }, flight_status: "active" },
         { flight: { iata: "PR2288" }, airline: { name: "Philippine Airlines" }, departure: { iata: "BCD", scheduled: "2026-03-05T18:40:00" }, arrival: { iata: "CEB", airport: "Cebu" }, flight_status: "active" },
         { flight: { iata: "5J2591" }, airline: { name: "Cebu Pacific" }, departure: { iata: "BCD", scheduled: "2026-03-05T18:55:00" }, arrival: { iata: "DVO", airport: "Davao City" }, flight_status: "scheduled" },
@@ -12,7 +12,7 @@ const MOCK_DATA = {
         { flight: { iata: "Z2606" }, airline: { name: "AirAsia" }, departure: { iata: "BCD", scheduled: "2026-03-05T19:30:00" }, arrival: { iata: "MNL", airport: "Manila" }, flight_status: "active" },
         { flight: { iata: "DG6455" }, airline: { name: "Cebgo" }, departure: { iata: "BCD", scheduled: "2026-03-05T21:25:00" }, arrival: { iata: "CEB", airport: "Cebu" }, flight_status: "scheduled" },
 
-        // --- ARRIVALS / APPROACHES (from your second image) ---
+        // ARRIVALS/APPROACHES: arrival.iata is "BCD"
         { flight: { iata: "PR2287" }, airline: { name: "Philippine Airlines" }, departure: { iata: "CEB", airport: "Cebu" }, arrival: { iata: "BCD", scheduled: "2026-03-05T18:15:00" }, flight_status: "scheduled" },
         { flight: { iata: "5J2590" }, airline: { name: "Cebu Pacific" }, departure: { iata: "DVO", airport: "Davao City" }, arrival: { iata: "BCD", scheduled: "2026-03-05T18:20:00" }, flight_status: "scheduled" },
         { flight: { iata: "PR2135" }, airline: { name: "Philippine Airlines" }, departure: { iata: "MNL", airport: "Manila" }, arrival: { iata: "BCD", scheduled: "2026-03-05T18:40:00" }, flight_status: "scheduled" },
@@ -21,7 +21,6 @@ const MOCK_DATA = {
         { flight: { iata: "DG6454" }, airline: { name: "Cebgo" }, departure: { iata: "CEB", airport: "Cebu" }, arrival: { iata: "BCD", scheduled: "2026-03-05T21:05:00" }, flight_status: "scheduled" }
     ]
 };
-
 let map;
 
 // 2. Initialize App
@@ -65,43 +64,47 @@ async function updateDashboard() {
 }
 
 function renderData(result) {
-    if (!result.data) return;
-    const arrivals = result.data.filter(f => f.arrival?.iata === 'BCD');
-    const departures = result.data.filter(f => f.departure?.iata === 'BCD');
+    if (!result || !result.data) return;
 
-    displayList(arrivals, 'arrivals-list', 'from');
-    displayList(departures, 'departures-list', 'to');
+    // APPROACHES: Filter for flights where the ARRIVAL is BCD
+    const arrivals = result.data.filter(f => f.arrival && f.arrival.iata === 'BCD');
+
+    // DEPARTURES: Filter for flights where the DEPARTURE is BCD
+    const departures = result.data.filter(f => f.departure && f.departure.iata === 'BCD');
+
+    displayList(arrivals, 'arrivals-list', 'approach');
+    displayList(departures, 'departures-list', 'departure');
 }
 
-function displayList(flights, elementId, dir) {
+function displayList(flights, elementId, type) {
     const el = document.getElementById(elementId);
-    el.innerHTML = flights.length ? '' : '<p style="color:#555; font-size:0.8rem;">No flights found.</p>';
+    if (!el) return;
+
+    el.innerHTML = flights.length ? '' : '<p style="color:#7f8c8d; padding:10px;">No flights found.</p>';
     
     flights.forEach(f => {
-        const timeValue = dir === 'from' ? (f.arrival.estimated || f.arrival.scheduled) : f.departure.scheduled;
-        const timeDisplay = timeValue ? new Date(timeValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--:--";
+        // If it's an approach, we want to show where it came FROM (departure airport)
+        // If it's a departure, we want to show where it is going TO (arrival airport)
+        const city = type === 'approach' ? f.departure.airport : f.arrival.airport;
+        const iata = type === 'approach' ? f.departure.iata : f.arrival.iata;
+        const timeValue = type === 'approach' ? f.arrival.scheduled : f.departure.scheduled;
         
-        // Show City Name + IATA Code (e.g., Manila MNL)
-        const city = dir === 'from' ? (f.departure?.airport || "Unknown") : (f.arrival?.airport || "Unknown");
-        const iata = dir === 'from' ? (f.departure?.iata || "???") : (f.arrival?.iata || "???");
-        
-        const statusText = f.flight_status === 'scheduled' ? 'Scheduled' : timeDisplay;
-        const statusClass = `status-${f.flight_status}`;
+        const timeDisplay = new Date(timeValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const div = document.createElement('div');
         div.className = 'flight-card';
         div.innerHTML = `
-            <div class="flight-info">
-                <div style="display: flex; flex-direction: column;">
-                    <span class="flight-time">${timeDisplay}</span>
-                    <small style="color: #95a5a6;">${statusText}</small>
+            <div class="flight-info" style="display: flex; align-items: center; width: 100%;">
+                <div style="min-width: 75px;">
+                    <div style="color: #f1c40f; font-weight: bold; font-size: 1rem;">${timeDisplay}</div>
+                    <small style="color: #95a5a6;">${f.flight_status === 'active' ? 'Live' : 'Scheduled'}</small>
                 </div>
-                <div style="margin-left: 15px;">
-                    <strong>${city} <span style="background: #333; padding: 1px 4px; border-radius: 3px; font-size: 0.7rem;">${iata}</span></strong><br>
-                    <small>${f.flight.iata} • ${f.airline.name}</small>
+                <div style="margin-left: 15px; flex-grow: 1;">
+                    <strong style="font-size: 1rem;">${city} <span style="background: #333; padding: 2px 5px; border-radius: 3px; font-size: 0.7rem;">${iata}</span></strong><br>
+                    <small style="color: #95a5a6;">${f.flight.iata} • ${f.airline.name}</small>
                 </div>
+                <div style="color: ${f.flight_status === 'active' ? '#2ecc71' : '#7f8c8d'}; font-size: 1.2rem;">●</div>
             </div>
-            <div class="${statusClass}">●</div>
         `;
         el.appendChild(div);
     });
