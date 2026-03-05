@@ -1,210 +1,36 @@
-/* 1. Global Reset & Base Styles */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    background: #0b0e14; color: #eee; font-family: sans-serif; 
+    height: 100vh; display: flex; flex-direction: column; overflow: hidden;
 }
 
-body {
-    background-color: #0b0e14; /* Deep dark background */
-    color: #e0e0e0;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Prevents double scrollbars */
+header { 
+    background: #1a1f26; padding: 15px; display: flex; 
+    justify-content: space-between; align-items: center; border-bottom: 2px solid #3498db; 
 }
 
-/* 2. Header Section */
-header {
-    background: #1a1f26;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #3498db;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    z-index: 1000; /* Stays above the map */
+.main-layout { display: flex; flex: 1; overflow: hidden; }
+#map { flex: 2; background: #222; }
+.sidebar { flex: 1; max-width: 380px; background: #11151c; padding: 20px; overflow-y: auto; border-left: 1px solid #333; }
+
+.column h2 { font-size: 1rem; color: #95a5a6; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+
+.flight-card { 
+    background: #1d232c; border-left: 4px solid #3498db; padding: 12px; 
+    margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; 
 }
 
-header h1 {
-    font-size: 1.4rem;
-    color: #3498db;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
+.flight-time { color: #f1c40f; font-weight: bold; margin-left: 5px; }
+.status-active, .status-landed { color: #2ecc71; font-weight: bold; font-size: 0.8rem; }
+.status-scheduled { color: #f1c40f; font-weight: bold; font-size: 0.8rem; }
 
-/* 3. Refresh Button */
-.refresh-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.1s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.refresh-btn:hover {
-    background: #2980b9;
-}
-
-.refresh-btn:active {
-    transform: scale(0.95);
-}
-
-/* 4. Main Layout (Map + Sidebar) */
-.main-layout {
-    display: flex;
-    flex: 1; /* Takes up remaining height */
-    width: 100%;
-}
-
-/* 5. Map Styling */
-#map {
-    flex: 2; /* Map is twice as wide as the sidebar */
-    height: 100%;
-    background: #111; /* Fallback before tiles load */
-}
-
-/* 6. Sidebar Styling */
-.sidebar {
-    flex: 1;
-    max-width: 400px;
-    background: #11151c;
-    border-left: 1px solid #2c3e50;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto; /* Allows scrolling through flights */
-    padding: 20px;
-}
-
-.column {
-    margin-bottom: 30px;
-}
-
-.column h2 {
-    font-size: 1.1rem;
-    color: #95a5a6;
-    margin-bottom: 15px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #2c3e50;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* 7. Flight Cards */
-.flight-card {
-    background: #1d232c;
-    border-left: 4px solid #3498db;
-    border-radius: 4px;
-    padding: 12px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    animation: fadeIn 0.5s ease-in;
-}
-
-.flight-info strong {
-    font-size: 1rem;
-    color: #fff;
-}
-
-.flight-info small {
-    display: block;
-    color: #bdc3c7;
-    margin-top: 4px;
-}
-
-/* Status Colors */
-.status-active, .status-landed {
-    color: #2ecc71;
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.status-scheduled {
-    color: #f1c40f;
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.status-cancelled {
-    color: #e74c3c;
-}
-
-/* 8. Animations & Responsiveness */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Tablet/Mobile Adjustments */
-@media (max-width: 768px) {
-    .main-layout {
-        flex-direction: column; /* Stack map on top of sidebar */
-    }
-    
-    #map {
-        flex: none;
-        height: 40%; /* Smaller map on mobile */
-    }
-    
-    .sidebar {
-        flex: 1;
-        max-width: 100%;
-        border-left: none;
-        border-top: 2px solid #3498db;
-    }
-}
-.controls { display: flex; align-items: center; gap: 20px; }
-
-/* The Switch Container */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 24px;
-}
-
+/* Toggle Switch Styles */
+.controls { display: flex; gap: 20px; align-items: center; }
+.switch { position: relative; width: 50px; height: 24px; }
 .switch input { opacity: 0; width: 0; height: 0; }
-
-/* The Slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #333;
-  transition: .4s;
-  border-radius: 24px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px; width: 16px;
-  left: 4px; bottom: 4px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider { background-color: #2ecc71; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #333; border-radius: 24px; transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background: white; border-radius: 50%; transition: .4s; }
+input:checked + .slider { background: #2ecc71; }
 input:checked + .slider:before { transform: translateX(26px); }
-
-.label-text {
-    margin-left: 60px;
-    font-size: 0.8rem;
-    color: #95a5a6;
-    white-space: nowrap;
-}
+.label-text { margin-left: 60px; font-size: 0.75rem; color: #95a5a6; }
+.refresh-btn { background: #3498db; border: none; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
