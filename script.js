@@ -1,4 +1,4 @@
-const API_KEY = '8333abc283f76bd4f08011912b04d757';
+const API_KEY = '83d8ca161a2ddda48f3028d1656dec47';
 const BCD_COORDS = [10.7762, 123.0189];
 
 // 1. Mock Data for Testing (Bacolod-Silay Airport)
