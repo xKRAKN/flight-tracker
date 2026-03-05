@@ -1,0 +1,48 @@
+body {
+    background-color: #0b0e14;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header { padding: 10px 20px; background: #1a1f26; border-bottom: 1px solid #333; }
+h1 { margin: 0; font-size: 1.5rem; color: #3498db; }
+
+.main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.map-container {
+    flex: 2; /* Map takes up more space */
+    background: #000;
+}
+
+.sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: #11151c;
+    overflow-y: auto; /* Scrollable lists */
+    border-left: 1px solid #333;
+}
+
+.column h2 { font-size: 1.1rem; border-bottom: 1px solid #444; padding-bottom: 5px; }
+
+.flight-card {
+    background: #1d232c;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    border-left: 4px solid #3498db;
+}
+
+.status-active { color: #2ecc71; }
+.status-scheduled { color: #f1c40f; }
