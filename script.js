@@ -1,4 +1,4 @@
-const API_KEY = '83d8ca161a2ddda48f3028d1656dec47'; // Replace with your real Aviationstack key
+const API_KEY = ''; // Replace with your real Aviationstack key
 const BCD_COORDS = [10.7762, 123.0189];
 
 // 1. Mock Data
@@ -48,7 +48,7 @@ async function updateDashboard() {
     } else {
         try {
             // FIX: Using CORS Proxy to allow HTTP API on HTTPS GitHub Pages
-            const apiTarget = `http://api.aviationstack.com/v1/flights?access_key=${83d8ca161a2ddda48f3028d1656dec47}`;
+            const apiTarget = `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}`;
             const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiTarget)}`;
             
             const res = await fetch(proxyUrl);
