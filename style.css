@@ -52,3 +52,22 @@ input:checked + .slider:before { transform: translateX(24px); }
     .main-layout { flex-direction: column; }
     #map { height: 300px; flex: none; }
 }
+
+.flight-info {
+    display: flex;
+    align-items: center;
+}
+
+.flight-card strong {
+    font-size: 1rem;
+    color: #fff;
+}
+
+.flight-card small {
+    color: #95a5a6;
+    font-size: 0.8rem;
+}
+
+/* Matching the green dot in your image */
+.status-active { color: #2ecc71; font-size: 1.2rem; }
+.status-scheduled { color: #7f8c8d; font-size: 1.2rem; }
