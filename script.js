@@ -1,90 +1,67 @@
-const API_KEY = '83d8ca161a2ddda48f3028d1656dec47';
+const API_KEY = 'YOUR_API_KEY';
 const BCD_COORDS = [10.7762, 123.0189];
 
-// 1. Mock Data for Testing (Bacolod-Silay Airport)
 const MOCK_DATA = {
     data: [
-        { flight: { iata: "5J483" }, airline: { name: "Cebu Pacific" }, departure: { iata: "MNL" }, arrival: { iata: "BCD" }, flight_status: "landed" },
-        { flight: { iata: "PR2132" }, airline: { name: "Philippine Airlines" }, departure: { iata: "BCD" }, arrival: { iata: "MNL" }, flight_status: "active" },
-        { flight: { iata: "Z2605" }, airline: { name: "AirAsia" }, departure: { iata: "MNL" }, arrival: { iata: "BCD" }, flight_status: "scheduled" },
-        { flight: { iata: "DG6507" }, airline: { name: "Cebgo" }, departure: { iata: "CEB" }, arrival: { iata: "BCD" }, flight_status: "active" }
+        { flight: { iata: "5J483" }, departure: { iata: "MNL", scheduled: "2026-03-05T08:30:00" }, arrival: { iata: "BCD", estimated: "2026-03-05T09:45:00" }, flight_status: "active" },
+        { flight: { iata: "PR2132" }, departure: { iata: "BCD", scheduled: "2026-03-05T10:15:00" }, arrival: { iata: "MNL", estimated: "2026-03-05T11:30:00" }, flight_status: "scheduled" }
     ]
 };
 
-// 2. Initialize the Map
+// Map Init
 const map = L.map('map').setView(BCD_COORDS, 11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+L.marker(BCD_COORDS).addTo(map).bindPopup('BCD Airport');
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO'
-}).addTo(map);
-
-L.marker(BCD_COORDS).addTo(map)
-    .bindPopup('<b>Bacolod-Silay International Airport (BCD)</b>')
-    .openPopup();
-
-// 3. The logic to decide between Mock and Real data
 async function updateDashboard() {
-    const toggle = document.getElementById('test-mode-toggle');
-    const isTestMode = toggle ? toggle.checked : false; // Safe check
+    const isTestMode = document.getElementById('test-mode-toggle').checked;
     
     if (isTestMode) {
-        console.log("TEST MODE: ON");
-        processAndRender(MOCK_DATA);
+        renderData(MOCK_DATA);
     } else {
-        console.log("LIVE MODE: ON");
         try {
-            const response = await fetch(`http://api.aviationstack.com/v1/flights?access_key=${API_KEY}`);
-            const result = await response.json();
-            processAndRender(result);
+            const res = await fetch(`http://api.aviationstack.com/v1/flights?access_key=${API_KEY}`);
+            const data = await res.json();
+            renderData(data);
         } catch (e) {
-            console.error("API Error:", e);
-            document.getElementById('arrivals-list').innerHTML = '<p style="color:#e74c3c">API Limit reached or Offline. Switch to Test Mode!</p>';
+            document.getElementById('arrivals-list').innerHTML = "<p style='color:red'>API Error (Check Key)</p>";
         }
     }
 }
 
-// 4. Send the filtered data to the lists
-function processAndRender(result) {
-    if (!result || !result.data) return;
-    
+function renderData(result) {
+    if (!result.data) return;
     const arrivals = result.data.filter(f => f.arrival?.iata === 'BCD');
     const departures = result.data.filter(f => f.departure?.iata === 'BCD');
 
-    renderList(arrivals, 'arrivals-list', 'from');
-    renderList(departures, 'departures-list', 'to');
+    displayList(arrivals, 'arrivals-list', 'from');
+    displayList(departures, 'departures-list', 'to');
 }
 
-// 5. Build the HTML cards
-function renderList(flights, elementId, dir) {
+function displayList(flights, elementId, dir) {
     const el = document.getElementById(elementId);
-    if (!el) return;
-
-    el.innerHTML = flights.length ? '' : `<p>No ${dir === 'from' ? 'arrivals' : 'departures'} found.</p>`;
+    el.innerHTML = flights.length ? '' : '<p>No flights.</p>';
     
     flights.forEach(f => {
+        const timeValue = dir === 'from' ? (f.arrival.estimated || f.arrival.scheduled) : f.departure.scheduled;
+        const timeDisplay = timeValue ? new Date(timeValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--:--";
+        const location = dir === 'from' ? f.departure.iata : f.arrival.iata;
+
         const div = document.createElement('div');
         div.className = 'flight-card';
-        const location = dir === 'from' ? (f.departure?.iata || "???") : (f.arrival?.iata || "???");
-        
         div.innerHTML = `
             <div class="flight-info">
-                <strong>${f.flight.iata}</strong><br>
+                <strong>${f.flight.iata}</strong> • <span class="flight-time">${timeDisplay}</span><br>
                 <small>${dir.toUpperCase()}: ${location}</small>
             </div>
-            <div class="status-${f.flight_status || 'scheduled'}">${(f.flight_status || 'SCHED').toUpperCase()}</div>
+            <div class="status-${f.flight_status}">${f.flight_status.toUpperCase()}</div>
         `;
         el.appendChild(div);
     });
 }
 
-// 6. Initialization & Event Listeners
+// Logic to bind the toggle correctly
 window.addEventListener('DOMContentLoaded', () => {
-    // Initial load
     updateDashboard();
-
-    // Listen for the toggle flip
-    const toggle = document.getElementById('test-mode-toggle');
-    if (toggle) {
-        toggle.addEventListener('change', updateDashboard);
-    }
+    document.getElementById('test-mode-toggle').addEventListener('change', updateDashboard);
 });
